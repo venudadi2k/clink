@@ -16,17 +16,15 @@ def approve_url(cursor,conn,id):
     conn.commit()
     return row
 
-def insert_into_pending(cursor,conn,id,url):
+def insert_pending(cursor,conn,id,url):
     statement = '''insert into pending values(?,?)'''.strip()
     cursor.execute(statement,(id,url))
     conn.commit()
     return id
 
-def delete_from_pending(cursor,conn,id):
+def delete_pending(cursor,conn,id):
     print('delete from pending called')
-    statement = '''delete from pending where id = {}'''.format(id)
-    cursor.execute(statement)
-    print('delete executed')
+    cursor.execute('''delete from pending where id={}'''.format(id))
     conn.commit()
     return id
 

@@ -59,7 +59,7 @@ try:
                       valid = True
               if (valid == False) or ('https' not in url):
                   id = time.time_ns()
-                  id = insert_into_pending(cursor,conn,id,url)
+                  id = insert_pending(cursor,conn,id,url)
                     
                   await message.delete()
                   await message.channel.send('External Link Found id {} assigned to request for link validation !!!'.format(id))
@@ -104,9 +104,10 @@ try:
     @commands.check(check_permission)
     async def disapprove(context):
         if context.channel.name in channels:
-          print('function called')
           d_id = context.message.content.split(" ")[1]
-          d_id = delete_from_pending(cursor,conn,d_id)
+          print(d_id)
+          print('function called')
+          d_id = delete_pending(cursor,conn,d_id)
           print('funtion returned') 
           await context.channel.send('url with id : {} has be disapproved by {}'.format(d_id,context.message.author.name))
 
