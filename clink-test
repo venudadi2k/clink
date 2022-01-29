@@ -1,0 +1,80 @@
+import os
+import re
+from mydb import get_pending,approve_url,insert_into_pending
+from discord.ext import commands
+
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+bot = commands.Bot(command_prefix="clink.")
+
+valid_domain = ['ethermon.io','ethermon.zendesk.com','opensea','metamask','airtable','polygonscan','etherscan','decentraland']
+valid_members = ['Ethermon-Team','Lead Mod','Moderator','Mod in Training','Bot']
+channels = ['tests']
+
+def isValidURL(url):
+        regex = ("((http|https)://)(www.)?" + "[a-zA-Z0-9@:%._\\+~#?&//=]" + "{2,256}\\.[a-z]" + "{2,6}\\b([-a-zA-Z0-9@:%" + "._\\+~#?&//=]*)")
+        p = re.compile(regex)
+        if (url == None):
+                return False
+        if(re.search(p, url)):
+                return True
+        else:
+                return False
+
+def check_permission(context):
+    for i in context.message.author.roles:
+        if i.name in valid_members:
+            return True
+    return False
+
+def ignore(message):
+    for i in message.author.roles:
+        if i.name in valid_members:
+            return True
+    return False
+
+def add(message):
+    valid_domain.append(message)
+
+@bot.event
+async def on_ready():
+    for i in bot.guilds:
+      print(f'{bot.user.name} has connected to server {i.name} ')
+    
+
+@bot.event
+async def on_message(message):
+    if message.channel.name in channels:
+      valid = False
+      if ignore(message) == False: 
+        if isValidURL(message.content):
+          url = message.content
+          for i in valid_domain:
+              if i in url:
+                  valid = True
+          if (valid == False) or ('https' not in url):
+              text = message.content
+              await message.delete()
+              await message.channel.send('External Link Found !!! ')
+              add(text)
+
+      await bot.process_commands(message)
+
+@bot.command(help='To make a link validation request')
+async def request(context):
+    if context.channel.name in channels:
+      await context.channel.send('Requested for Link Validation !!!')
+
+@bot.command(help='This is to approve the link ( only for mods and admins)')
+@commands.check(check_permission)
+async def approve(context):
+    if context.channel.name in channels:
+      await context.channel.send(valid_domain[-1])
+
+@bot.event
+async def on_command_error(context,error):
+    if context.channel.name in channels:
+      if isinstance(error, commands.CheckFailure):
+        await context.channel.send('You don\'t have permissions to run this command')
+
+bot.run(DISCORD_TOKEN)
+

@@ -22,6 +22,14 @@ def insert_into_pending(cursor,conn,id,url):
     conn.commit()
     return id
 
+def delete_from_pending(cursor,conn,id):
+    print('delete from pending called')
+    statement = '''delete from pending where id = {}'''.format(id)
+    cursor.execute(statement)
+    print('delete executed')
+    conn.commit()
+    return id
+
 def get_valid(cursor):
     cursor.execute('''select url from valid''')
     return cursor.fetchall()

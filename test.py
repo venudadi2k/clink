@@ -73,31 +73,43 @@ try:
           output = get_pending(cursor)
           if len(output) == 0:
               await context.channel.send('No pending url\'s')
-          else : 
-              output = get_pending(cursor)
+          else :
+              pendinglist = '' 
               for i in output:
-                  data = '{} {}'.format(i[0],i[1].split('//')[1])
-                  await context.channel.send(data)
+                  pendinglist += '{} {}\n'.format(i[0],i[1].split('//')[1])
+              await context.channel.send(pendinglist)
 
     @bot.command(help='To check the list of whitelisted url\'s ')
     async def vlist(context):
         if context.channel.name in channels:
-          output = get_pending(cursor)
+          output = get_valid(cursor)
           if len(output) == 0:
               await context.channel.send('No valid url\'s')
-          else : 
-              output = get_valid(cursor)
+          else :
+              whitelist = ''
               for i in output:
-                  data = '{} {}'.format(i[0],i[1])
-                  await context.channel.send(data)
+                  whitelist += '{}\n'.format(i[0])
+              await context.channel.send(whitelist)
 
-    @bot.command(help='This is to approve the link ( only for mods and admins)')
+    @bot.command(help='This is used to approve the pending url\'s ')
     @commands.check(check_permission)
     async def approve(context):
         if context.channel.name in channels:
           a_id = context.message.content.split(" ")[1]
           a_url = approve_url(cursor,conn,a_id)
           await context.channel.send('url : {}\nid : {}\napproved by : {}\n'.format(a_url[0][1],a_id,context.message.author.name))
+
+
+    @bot.command(help='This is used to delete the pending url\'s ')
+    @commands.check(check_permission)
+    async def disapprove(context):
+        if context.channel.name in channels:
+          print('function called')
+          d_id = context.message.content.split(" ")[1]
+          d_id = delete_from_pending(cursor,conn,d_id)
+          print('funtion returned') 
+          await context.channel.send('url with id : {} has be disapproved by {}'.format(d_id,context.message.author.name))
+
 
     @bot.event
     async def on_command_error(context,error):
