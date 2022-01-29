@@ -62,7 +62,7 @@ try:
                   id = insert_into_pending(cursor,conn,id,url)
                     
                   await message.delete()
-                  await message.channel.send('External Link Found id {} assigned to reqest for link validation !!!'.format(id))
+                  await message.channel.send('External Link Found id {} assigned to request for link validation !!!'.format(id))
                   
 
         await bot.process_commands(message)
@@ -79,13 +79,25 @@ try:
                   data = '{} {}'.format(i[0],i[1].split('//')[1])
                   await context.channel.send(data)
 
+    @bot.command(help='To check the list of whitelisted url\'s ')
+    async def vlist(context):
+        if context.channel.name in channels:
+          output = get_pending(cursor)
+          if len(output) == 0:
+              await context.channel.send('No valid url\'s')
+          else : 
+              output = get_valid(cursor)
+              for i in output:
+                  data = '{} {}'.format(i[0],i[1])
+                  await context.channel.send(data)
+
     @bot.command(help='This is to approve the link ( only for mods and admins)')
     @commands.check(check_permission)
     async def approve(context):
         if context.channel.name in channels:
           a_id = context.message.content.split(" ")[1]
           a_url = approve_url(cursor,conn,a_id)
-          await context.channel.send('The url {} with id {} is now approved'.format(a_url[0][1],a_id))
+          await context.channel.send('url : {}\nid : {}\napproved by : {}\n'.format(a_url[0][1],a_id,context.message.author.name))
 
     @bot.event
     async def on_command_error(context,error):
