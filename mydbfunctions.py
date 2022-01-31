@@ -23,7 +23,6 @@ def insert_pending(cursor,conn,id,url):
     return id
 
 def delete_pending(cursor,conn,id):
-    print('delete from pending called')
     cursor.execute('''delete from pending where id={}'''.format(id))
     conn.commit()
     return id

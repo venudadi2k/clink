@@ -1,5 +1,5 @@
 import os , re , time , sqlite3
-from mydbfunctions import get_pending,approve_url,insert_into_pending,get_valid
+from mydbfunctions import get_pending,approve_url,insert_pending,delete_pending,get_valid
 from discord.ext import commands
 
 try:
@@ -105,10 +105,7 @@ try:
     async def disapprove(context):
         if context.channel.name in channels:
           d_id = context.message.content.split(" ")[1]
-          print(d_id)
-          print('function called')
           d_id = delete_pending(cursor,conn,d_id)
-          print('funtion returned') 
           await context.channel.send('url with id : {} has be disapproved by {}'.format(d_id,context.message.author.name))
 
 
